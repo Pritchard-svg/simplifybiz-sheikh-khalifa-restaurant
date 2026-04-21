@@ -1,0 +1,7 @@
+.idea/
+.vscode/
+*.log
+debug-error.txt
+/vendor/
+.DS_Store
+Thumbs.db
