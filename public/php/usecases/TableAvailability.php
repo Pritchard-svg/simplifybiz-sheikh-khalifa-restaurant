@@ -18,6 +18,11 @@ class TableAvailability {
         $this->reservationRepository = $reservationRepository;
     }
 
+    /**
+     * Checks availability for a single slot.
+     *
+     * @return array{available: bool, taken?: int, max?: int, remaining?: int, message: string}
+     */
     public function check( string $date, string $time, string $partySizeLabel, string $seatingPreference ): array {
 
         $inventory = TableInventory::get_all();
@@ -57,5 +62,59 @@ class TableAvailability {
             'remaining' => $remaining,
             'message'   => $remaining . ' table(s) remaining for this slot.',
         ];
+    }
+
+    /**
+     * Finds available alternative time slots on the same date for the given
+     * party size. Checks both indoor and outdoor seating at each time, skips
+     * slots that are already in the past, and excludes the originally-requested
+     * time (which is presumed unavailable since that's why we're looking for alternatives).
+     *
+     * @return array<int, array{time: string, seating: string[]}>
+     */
+    public function find_alternatives_for_date( string $date, string $partySizeLabel, string $excludeTime = '' ): array {
+
+        $times        = TimeSlots::get_all();
+        $alternatives = [];
+
+        if ( empty( $times ) ) {
+            return $alternatives;
+        }
+
+        $timezone = wp_timezone();
+        $now      = new \DateTimeImmutable( 'now', $timezone );
+
+        foreach ( $times as $time ) {
+
+            if ( $time === $excludeTime ) {
+                continue;
+            }
+
+            // Skip slots already in the past.
+            try {
+                $slotDateTime = new \DateTimeImmutable( $date . ' ' . $time, $timezone );
+                if ( $slotDateTime <= $now ) {
+                    continue;
+                }
+            } catch ( \Throwable $e ) {
+                continue;
+            }
+
+            $indoor  = $this->check( $date, $time, $partySizeLabel, 'indoor' );
+            $outdoor = $this->check( $date, $time, $partySizeLabel, 'outdoor' );
+
+            $seatingOptions = [];
+            if ( ! empty( $indoor['available'] ) )  { $seatingOptions[] = 'indoor';  }
+            if ( ! empty( $outdoor['available'] ) ) { $seatingOptions[] = 'outdoor'; }
+
+            if ( ! empty( $seatingOptions ) ) {
+                $alternatives[] = [
+                    'time'    => $time,
+                    'seating' => $seatingOptions,
+                ];
+            }
+        }
+
+        return $alternatives;
     }
 }

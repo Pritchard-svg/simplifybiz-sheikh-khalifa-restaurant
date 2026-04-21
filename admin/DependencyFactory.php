@@ -21,9 +21,11 @@ class DependencyFactory {
         // Usecases
         $tableAvailability = new TableAvailability( $reservationRepository );
         $reservation       = new Reservation( $tableAvailability );
+        $rejectionEmail    = new RejectionEmail( $tableAvailability );
 
         // Adapters
         new GravityFormsAdapter( $reservation );
+        new GravityFlowAdapter( $rejectionEmail );
 
         // Presentation
         new BodyClass();

@@ -49,7 +49,7 @@ class Reservation {
         if ( ! empty( $availability['available'] ) ) {
             $availabilityLine = "{$statusIcon} Tables Available — {$availability['remaining']} of {$availability['max']} remaining.";
         } else {
-            $availabilityLine = "{$statusIcon} NO TABLES AVAILABLE — Auto rejected.";
+            $availabilityLine = "{$statusIcon} No tables available for this slot.";
         }
 
         $text  = "🍽️ *New Reservation Request*\n";

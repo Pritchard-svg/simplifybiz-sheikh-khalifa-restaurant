@@ -28,10 +28,19 @@ class ReservationRepository extends SMPLFY_BaseRepository {
      * Only counts entries whose Gravity Flow workflow has finished with a
      * non-rejected outcome — pending/in-progress/rejected do NOT count
      * against availability.
+     *
+     * Also returns 0 if the queried slot's date+time is already in the past,
+     * so tables automatically "return to availability" once the reservation
+     * time has elapsed.
      */
     public function count_holding_reservations_for_slot( string $date, string $time, string $partySize ): int {
 
         if ( ! class_exists( '\GFAPI' ) ) {
+            return 0;
+        }
+
+        // If the queried slot is in the past, treat all tables as available.
+        if ( $this->is_slot_in_past( $date, $time ) ) {
             return 0;
         }
 
@@ -48,5 +57,27 @@ class ReservationRepository extends SMPLFY_BaseRepository {
         ] );
 
         return is_array( $entries ) ? count( $entries ) : 0;
+    }
+
+    /**
+     * Returns true if the given date+time is in the past relative to the
+     * site's configured timezone. Returns false if the strings can't be parsed
+     * (safer to assume future — the caller will still hit the DB count).
+     */
+    private function is_slot_in_past( string $date, string $time ): bool {
+
+        if ( $date === '' || $time === '' ) {
+            return false;
+        }
+
+        try {
+            $timezone     = wp_timezone();
+            $slotDateTime = new \DateTimeImmutable( $date . ' ' . $time, $timezone );
+            $now          = new \DateTimeImmutable( 'now', $timezone );
+            return $slotDateTime < $now;
+        } catch ( \Throwable $e ) {
+            \SmplfyCore\SMPLFY_Log::error( 'ReservationRepository could not parse slot date/time: ' . $e->getMessage() );
+            return false;
+        }
     }
 }
