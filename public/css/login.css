@@ -1,0 +1,113 @@
+/* ==========================================================================
+   Sheikh Khalifa Restaurant — Login page styling
+   Overrides MemberPress guest-layout styles with the restaurant's brand
+   palette. Injected into <head> at priority 999 so it wins the cascade.
+   ========================================================================== */
+
+body.mepr-guest-layout,
+#mepro-login-hero,
+.guest-layout {
+    background-color: #1a1612 !important;
+}
+
+.mepro-boxed {
+    background-color: #f9f4ec !important;
+    border-radius: 0 !important;
+    border: 1px solid rgba(200, 169, 110, 0.3) !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5) !important;
+    overflow: hidden !important;
+}
+
+.mepro-login-contents {
+    background: #f9f4ec !important;
+    padding: 48px !important;
+}
+
+.mepro-login-image {
+    background-color: #1a1612 !important;
+}
+
+#mepr-template-login h1,
+.mepro-login-contents h1 {
+    font-family: 'Cormorant Garamond', serif !important;
+    font-size: 36px !important;
+    color: #1a1612 !important;
+    font-weight: 600 !important;
+    margin-bottom: 28px !important;
+}
+
+.mepro-form .mp-form-label label,
+.mepro-form label {
+    font-family: 'Jost', sans-serif !important;
+    font-size: 12px !important;
+    letter-spacing: 0.2em !important;
+    text-transform: uppercase !important;
+    color: #8a6820 !important;
+    font-weight: 500 !important;
+}
+
+.mepro-form input[type="text"],
+.mepro-form input[type="password"] {
+    border: 1px solid rgba(200, 169, 110, 0.4) !important;
+    border-radius: 0 !important;
+    font-family: 'Jost', sans-serif !important;
+    font-size: 15px !important;
+    color: #1a1612 !important;
+    background: #ffffff !important;
+    padding: 14px 16px !important;
+    box-shadow: none !important;
+}
+
+.mepro-form input[type="text"]:focus,
+.mepro-form input[type="password"]:focus {
+    border-color: #c8a96e !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.mepro-form .submit input[type="submit"],
+#wp-submit {
+    background: #1a1612 !important;
+    color: #c8a96e !important;
+    border: 1px solid #1a1612 !important;
+    border-radius: 0 !important;
+    font-family: 'Jost', sans-serif !important;
+    font-size: 13px !important;
+    letter-spacing: 0.2em !important;
+    text-transform: uppercase !important;
+    width: 100% !important;
+    padding: 16px !important;
+    cursor: pointer !important;
+    box-shadow: none !important;
+}
+
+.mepro-form .submit input[type="submit"]:hover,
+#wp-submit:hover {
+    background: #c8a96e !important;
+    color: #1a1612 !important;
+    border-color: #c8a96e !important;
+}
+
+.mepro-form .mepr_remember_me label {
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    font-size: 14px !important;
+    color: #4a3f35 !important;
+}
+
+.mepr-login-actions a {
+    font-family: 'Jost', sans-serif !important;
+    color: #8a6820 !important;
+    font-size: 13px !important;
+    text-decoration: none !important;
+}
+
+.mepr-login-actions a:hover {
+    color: #1a1612 !important;
+}
+
+.app-layout .site-header,
+.guest-layout .site-header {
+    background-color: #1a1612 !important;
+    border-bottom: 1px solid rgba(200, 169, 110, 0.3) !important;
+}
