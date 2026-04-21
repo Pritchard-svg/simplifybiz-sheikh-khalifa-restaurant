@@ -28,23 +28,3 @@ public/php/repositories/          ReservationRepository (extends SMPLFY_BaseRepo
 public/php/usecases/              TableAvailability, Reservation (business logic)
 public/php/adapters/              GravityFormsAdapter (hooks GF -> usecases)
 public/php/presentation/          BodyClass, NavMenu, LoginPageStyles (self-registering UI)
-
-=== TODOs ===
-1. Verify the following field IDs in public/php/types/FormIds.php against
-   the actual Reservation form (form 6):
-     - RESERVATION_NAME_FIELD_ID
-     - RESERVATION_EMAIL_FIELD_ID
-     - RESERVATION_SEATING_FIELD_ID
-     - RESERVATION_SPECIAL_REQUESTS_FIELD_ID
-     - RESERVATION_ADDONS_FIELD_ID
-   Then update ReservationEntity.php to match.
-
-2. If name is a compound Gravity Forms "Name" field, change the entity
-   mapping to use the subfield notation (e.g. '1.3' + '1.6') and add
-   nameFirst / nameLast properties.
-
-=== Debugging ===
-Errors are logged to debug-error.txt in the plugin root. View them at:
-  https://<site>/wp-content/plugins/simplifybiz-sheikh-khalifa-restaurant/debug-log-reader.php
-
-All plugin-wide logging uses \SmplfyCore\SMPLFY_Log::error().
