@@ -42,6 +42,8 @@ class Reservation {
 
     private function send_google_chat_notification( ReservationEntity $entity, array $availability ): void {
 
+        $fullName = trim( $entity->nameFirst . ' ' . $entity->nameLast );
+
         $statusIcon = ! empty( $availability['available'] ) ? '✅' : '❌';
 
         if ( ! empty( $availability['available'] ) ) {
@@ -52,8 +54,9 @@ class Reservation {
 
         $text  = "🍽️ *New Reservation Request*\n";
         $text .= "────────────────────\n";
-        $text .= "*Name:* {$entity->name}\n";
+        $text .= "*Name:* {$fullName}\n";
         $text .= "*Email:* {$entity->email}\n";
+        $text .= "*Phone:* {$entity->phone}\n";
         $text .= "*Date:* {$entity->date}\n";
         $text .= "*Time:* {$entity->time}\n";
         $text .= "*Guests:* {$entity->partySize}\n";
