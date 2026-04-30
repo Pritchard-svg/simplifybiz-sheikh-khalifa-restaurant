@@ -13,19 +13,13 @@ class DependencyFactory {
         }
         self::$initialized = true;
 
-        $gravityFormsApi = new \SmplfyCore\SMPLFY_GravityFormsApiWrapper();
-
-        // Repositories
-        $reservationRepository = new ReservationRepository( $gravityFormsApi );
-
         // Usecases
-        $tableAvailability = new TableAvailability( $reservationRepository );
-        $reservation       = new Reservation( $tableAvailability );
-        $rejectionEmail    = new RejectionEmail( $tableAvailability );
+        $reservation         = new Reservation();
+        $reservationApproval = new ReservationApproval();
 
         // Adapters
         new GravityFormsAdapter( $reservation );
-        new GravityFlowAdapter( $rejectionEmail );
+        new GravityFlowAdapter( $reservationApproval );
 
         // Presentation
         new BodyClass();

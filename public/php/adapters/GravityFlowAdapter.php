@@ -4,10 +4,10 @@ namespace SMPLFY\sheikh_khalifa;
 
 class GravityFlowAdapter {
 
-    private RejectionEmail $rejectionEmail;
+    private ReservationApproval $reservationApproval;
 
-    public function __construct( RejectionEmail $rejectionEmail ) {
-        $this->rejectionEmail = $rejectionEmail;
+    public function __construct( ReservationApproval $reservationApproval ) {
+        $this->reservationApproval = $reservationApproval;
 
         $this->register_hooks();
     }
@@ -23,8 +23,9 @@ class GravityFlowAdapter {
     }
 
     /**
-     * Routes reservation rejections to the RejectionEmail usecase.
-     * Ignores all other forms and all non-rejected statuses.
+     * Fires the team notification when the Reservation form's approval step
+     * (step 7) is completed with an 'approved' status. All other step
+     * completions are ignored.
      *
      * @param int    $step_id
      * @param int    $entry_id
@@ -37,10 +38,8 @@ class GravityFlowAdapter {
             return;
         }
 
-        if ( (string) $status !== 'rejected' ) {
-            return;
+        if ( (string) $status === 'approved' && (int) $step_id === FormIds::RESERVATION_APPROVAL_STEP_ID ) {
+            $this->reservationApproval->handle_approval( (int) $entry_id );
         }
-
-        $this->rejectionEmail->handle_rejection( (int) $entry_id );
     }
 }

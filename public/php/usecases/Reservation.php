@@ -7,50 +7,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Handles reservation form submissions — checks availability and posts
- * a Google Chat notification to the Sheikh Khalifa Reservations space.
+ * Posts a Google Chat notification to the reservations space
+ * whenever the Reservation form is submitted.
  */
 class Reservation {
 
     private string $webhook_reservations = 'https://chat.googleapis.com/v1/spaces/AAQAX6kdyXI/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=nGLz0rGXIn1BV3wkbUxRv-CUNmHWKURwPxQ1L8dJ3ho';
-
-    private TableAvailability $tableAvailability;
-
-    public function __construct( TableAvailability $tableAvailability ) {
-        $this->tableAvailability = $tableAvailability;
-    }
 
     public function handle_reservation_submission( array $entry ): void {
 
         try {
 
             $entity = new ReservationEntity( $entry );
-
-            $availability = $this->tableAvailability->check(
-                (string) $entity->date,
-                (string) $entity->time,
-                (string) $entity->partySize,
-                (string) $entity->seating
-            );
-
-            $this->send_google_chat_notification( $entity, $availability );
+            $this->send_google_chat_notification( $entity );
 
         } catch ( \Throwable $e ) {
             \SmplfyCore\SMPLFY_Log::error( 'Reservation submission error: ' . $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine() );
         }
     }
 
-    private function send_google_chat_notification( ReservationEntity $entity, array $availability ): void {
+    private function send_google_chat_notification( ReservationEntity $entity ): void {
 
         $fullName = trim( $entity->nameFirst . ' ' . $entity->nameLast );
-
-        $statusIcon = ! empty( $availability['available'] ) ? '✅' : '❌';
-
-        if ( ! empty( $availability['available'] ) ) {
-            $availabilityLine = "{$statusIcon} Tables Available — {$availability['remaining']} of {$availability['max']} remaining.";
-        } else {
-            $availabilityLine = "{$statusIcon} No tables available for this slot.";
-        }
 
         $text  = "🍽️ *New Reservation Request*\n";
         $text .= "────────────────────\n";
@@ -68,12 +46,6 @@ class Reservation {
 
         if ( ! empty( $entity->addons ) ) {
             $text .= "*Add-ons:* {$entity->addons}\n";
-        }
-
-        $text .= "────────────────────\n" . $availabilityLine . "\n";
-
-        if ( ! empty( $availability['available'] ) ) {
-            $text .= "\n👉 Action required: " . site_url( '/manager-dashboard' );
         }
 
         wp_remote_post( $this->webhook_reservations, [

@@ -28,6 +28,13 @@ class BodyClass {
             $classes[] = 'role-' . sanitize_html_class( $role );
         }
 
+        // Administrators see everything — add all role classes so role-gated
+        // CSS selectors match for them too.
+        if ( in_array( 'administrator', (array) $user->roles, true ) ) {
+            $classes[] = 'role-manager';
+            $classes[] = 'role-host';
+        }
+
         return $classes;
     }
 }

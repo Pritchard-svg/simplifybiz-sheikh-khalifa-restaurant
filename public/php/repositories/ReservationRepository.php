@@ -25,12 +25,13 @@ class ReservationRepository extends SMPLFY_BaseRepository {
     /**
      * Counts reservations currently holding a table for the given slot.
      *
-     * Only counts entries whose Gravity Flow workflow has finished with a
-     * non-rejected outcome — pending/in-progress/rejected do NOT count
-     * against availability.
+     * Only counts entries that have been explicitly approved at step 7 —
+     * those are the ones flagged with ReservationApproval::APPROVED_META_KEY = 1.
+     * Pending, rejected, and previously-approved-then-rejected entries do NOT
+     * count against availability.
      *
      * Also returns 0 if the queried slot's date+time is already in the past,
-     * so tables automatically "return to availability" once the reservation
+     * so tables automatically return to availability once the reservation
      * time has elapsed.
      */
     public function count_holding_reservations_for_slot( string $date, string $time, string $partySize ): int {
@@ -39,7 +40,6 @@ class ReservationRepository extends SMPLFY_BaseRepository {
             return 0;
         }
 
-        // If the queried slot is in the past, treat all tables as available.
         if ( $this->is_slot_in_past( $date, $time ) ) {
             return 0;
         }
@@ -51,8 +51,7 @@ class ReservationRepository extends SMPLFY_BaseRepository {
                 [ 'key' => FormIds::RESERVATION_DATE_FIELD_ID,       'value' => $date ],
                 [ 'key' => FormIds::RESERVATION_TIME_FIELD_ID,       'value' => $time ],
                 [ 'key' => FormIds::RESERVATION_PARTY_SIZE_FIELD_ID, 'value' => $partySize ],
-                [ 'key' => 'workflow_final_status', 'value' => 'rejected', 'operator' => 'isnot' ],
-                [ 'key' => 'workflow_final_status', 'value' => 'pending',  'operator' => 'isnot' ],
+                [ 'key' => ReservationApproval::APPROVED_META_KEY,   'value' => '1' ],
             ],
         ] );
 
@@ -61,8 +60,7 @@ class ReservationRepository extends SMPLFY_BaseRepository {
 
     /**
      * Returns true if the given date+time is in the past relative to the
-     * site's configured timezone. Returns false if the strings can't be parsed
-     * (safer to assume future — the caller will still hit the DB count).
+     * site's configured timezone. Returns false if the strings can't be parsed.
      */
     private function is_slot_in_past( string $date, string $time ): bool {
 
